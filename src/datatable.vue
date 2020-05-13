@@ -1,0 +1,222 @@
+<template>
+    <div v-cloak>
+
+        <table v-bind="get_option('dom_table_attributes')">
+            <thead v-bind="get_option('dom_table_thead_attributes')">
+                <tr>
+                    <template v-for="(col, col_i) in get_columns()">
+                        <th :key="col_i" v-if="col.enable_html" v-html="col.text" v-bind="col.attributes"></th>
+                        <th :key="col_i" v-else v-bind="col.attributes">{{ col.text }}</th>
+                    </template>
+                </tr>
+            </thead>
+            <!-- <draggable tag="tbody"
+                v-model="dtItems"
+                :disabled="!dtOptions.draggable"
+                v-bind="{...dtOptions.dom_table_tbody_attributes, ...dtOptions.draggable_attributes}"
+                @start="dtOptions.draggable_start(...arguments, dtItems[arguments[0].oldIndex][dtOptions.key].text, dtItems)"
+                @end="dtOptions.draggable_end(...arguments, dtItems[arguments[0].newIndex][dtOptions.key].text, dtItems)"
+            > -->
+                <template v-for="(row, row_i) in get_items()">
+                    <tr :key="row_i" v-show="do_filter(row)">
+                        <template v-for="(col, col_i) in get_columns()">
+                            <td :key="col_i"
+                                v-if="row[col.name].enable_html"
+                                v-html="row[col.name].text"
+                                v-bind="row[col.name].attributes"
+                            >
+                            </td>
+                            <td :key="col_i"
+                                v-else
+                                v-bind="row[col.name].attributes"
+                            >{{ row[col.name].text }}</td>
+                        </template>
+                    </tr>
+                </template>
+            <!-- </draggable> -->
+        </table>
+
+    </div>
+</template>
+
+
+
+<script>
+//export default {
+module.exports = {
+    props: ['items', 'columns', 'options', 'search'],
+    components: {
+        //draggable,
+    },
+    data: function(){
+        return {
+            //cmpt_items: this.items,
+            //cmpt_columns: this.columns,
+            //cmpt_options: this.options,
+            default_options: {
+                key: 'id',
+                order_by: ['id'],
+                draggable: false,
+                draggable_start: function(event, key, items){},
+                draggable_end: function(event, key, items){},
+                draggable_attributes: {}, // {handle:'.handle'
+                dom_table_attributes: {},
+                dom_table_thead_attributes: {},
+                dom_table_tbody_attributes: {}
+            }
+        }
+    },
+    mounted () {
+        // TODO: draggable entfernen und nur sortable verwenden?
+        /* eslint-disable no-new */
+        /* new Sortable(
+            this.$refs.sortableTable.$el.getElementsByTagName('tbody')[0],
+            {
+            draggable: '.sortableRow',
+            handle: '.sortHandle',
+            onEnd: this.dragReorder
+            }
+        ) */
+
+
+        //this.order();
+    },
+    computed: {
+        
+    },
+    methods: {
+        get_option: function(option) {
+            let val = this.vald(()=>{return this.options[option];}, this.default_options[option]);
+            return val;
+        },
+        get_columns: function() {
+            let columns = [];
+
+            for (let col_i in this.columns) {
+                let col = this.columns[col_i];
+
+                let column = {
+                    attributes: {},
+                    enable_html: false,
+                    name: '',
+                    text: ''
+                };
+
+                if ( typeof col.enable_html !== 'undefined' ) column.attributes = col.attributes;
+                if ( typeof col.enable_html !== 'undefined' ) column.enable_html = !!col.enable_html;
+
+                if ( typeof col === 'string' ) {
+                    column.name = col;
+                    column.text = col;
+                }
+                else if ( typeof col === 'object' ) {
+                    column.name = col.name;
+                    column.text = col.text || '';
+                }
+
+                columns[col_i] = column;
+            }
+
+            return columns;
+        },
+        get_items: function() {
+            //{idx:2, name:{text:'"Bobby"', value:'Bob'}, category:'Das'}
+            let items = [];
+
+            for (let row_i in this.items) {
+                let row = this.items[row_i];
+
+                items[row_i] = {};
+
+                for (let col_i in row) {
+                    let col = this.items[row_i][col_i];
+
+                    items[row_i][col_i] = {};
+
+                    let column = {
+                        attributes: {},
+                        enable_html: false,
+                        text: '',
+                        value: ''
+                    };
+
+                    if ( typeof col.attributes !== 'undefined' ) column.attributes = col.attributes;
+                    if ( typeof col.enable_html !== 'undefined' ) column.enable_html = !!col.enable_html;
+
+                    if ( typeof col === 'object' ) {
+                        column.text = col.text || '';
+                        column.value = col.value || col.text;
+                    }
+                    else if ( typeof col === 'string' ) {
+                        column.text = col;
+                        column.value = col;
+                    }
+                    else if ( typeof col === 'number' ) {
+                        column.text = col;
+                        column.value = col;
+                    }
+
+                    items[row_i][col_i] = column;
+                }
+            }
+
+            items = this.do_order(items);
+
+            return items;
+        },
+
+        // Datatable functions
+        do_order: function(items) {
+            items.sort((a, b) => {
+                var isNumber = function(n) { return !isNaN(parseFloat(n)) && isFinite(n); };
+                let order_keys = this.get_option('order_by');//['order','id'];
+                for (let i in order_keys) {
+                    let order_key = order_keys[i];
+                    let value_a = a[order_key].value;
+                    let value_b = b[order_key].value;
+                    let compared = isNumber(value_a) ? value_a - value_b : value_a.localeCompare(value_b);
+                    if (compared) return compared;
+                }
+                return 0;
+            });
+            return items;
+        },
+        do_filter: function(row) {
+            let filter = true;
+            let search = this.do_search(row);
+            return filter && search;
+        },
+        do_search: function(row) {
+            if ( !this.search ) return true;
+            let q = this.search.split(' ');
+            let fulltext = '';
+            for (let col of this.get_columns()) {
+                let val = row[col.name].value.toString();
+                fulltext += ' ' + val;
+            }
+            //console.log(fulltext);
+            let found = 0; // all must be true
+            for (let i in q) {
+                if ( fulltext.toLowerCase().includes(q[i].toLowerCase()) ) found++;
+            }
+            if ( found == q.length ) return true;
+            return false;
+        },
+
+        // Helper
+        isset: function(fn) {
+            var value;
+            try { value = fn(); } catch (e) {}
+            return value !== undefined;
+        },
+        val: function(fn) {
+            var value;
+            try { value = fn(); } catch (e) {}
+            return value;
+        },
+        vald: function(fn, d) { // value with default
+            return this.val(fn) || d;
+        }
+    }
+}
+</script>

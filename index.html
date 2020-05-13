@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatatableVue</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app">
+    <div class="container">
+
+
+
+        <div class="jumbotron jumbotron-fluid my-5">
+            <div class="container">
+                <h1 class="display-4 text-center">DatatableVue</h1>
+                <p class="lead text-center">A simple and easy to use datatable with VueJS.</p>
+            </div>
+        </div>
+
+
+        <div class="text-center my-5">
+            <select v-model="demos_index">
+                <option v-for="(demo, demo_index) in demos" :value="demo_index">{{ demo.description.name }}</option>
+            </select>
+        </div>
+
+        <div class="rounded bg-light my-5 p-4">
+            <div class="row">
+                <div class="col">
+                    <datatable-component :items="items()" :columns="columns()" :options="options()" :search="demo_search"></datatable-component>
+                </div>
+                <div class="col">
+                    <h2>{{ description().name }}</h2>
+                    <p>{{ description().text }}</p>
+                    <div><h3>Columns:</h3><pre>{{ columns() }}</pre></div>
+                    <div><h3>Items:</h3><pre>{{ items() }}</pre></div>
+                    <div><h3>Options:</h3><pre>{{ options() }}</pre></div>
+                    <div><h3>Search:</h3><input v-model="demo_search" ></div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/http-vue-loader"></script><!-- Use module.exports instead of export default. httpVueLoader does not resolve modules required using the export syntax yet. -->
+<script src="src/test-data.js"></script>
+<script src="src/test.js"></script>
+
+</body>
+</html>
