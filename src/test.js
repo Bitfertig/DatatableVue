@@ -1,7 +1,7 @@
 var app = new window.Vue({
     el: '#app',
     components: {
-        'datatable-component': window.httpVueLoader('src/datatable.vue')
+        'justdatatable-component': window.httpVueLoader('src/justdatatable.vue')
     },
     data: function() { 
         return {

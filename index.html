@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DatatableVue</title>
+    <title>JustDatatableVue</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -15,8 +15,10 @@
 
         <div class="jumbotron jumbotron-fluid my-5">
             <div class="container">
-                <h1 class="display-4 text-center">DatatableVue</h1>
+                <h1 class="display-4 text-center"><i class="text-muted font-weight-lighter">Just</i>DatatableVue</h1>
                 <p class="lead text-center">A simple and easy to use datatable with VueJS.</p>
+                <br>
+                <div class="text-center"><a href="src/justdatatable.vue" download class="btn btn-info">Download</a></div>
             </div>
         </div>
 
@@ -27,10 +29,11 @@
             </select>
         </div>
 
+
         <div class="rounded bg-light my-5 p-4">
             <div class="row">
                 <div class="col">
-                    <datatable-component :items="items()" :columns="columns()" :options="options()" :search="demo_search"></datatable-component>
+                    <justdatatable-component :items="items()" :columns="columns()" :options="options()" :search="demo_search"></justdatatable-component>
                 </div>
                 <div class="col">
                     <h2>{{ description().name }}</h2>
@@ -42,6 +45,42 @@
                 </div>
             </div>
         </div>
+
+
+        <div class="rounded bg-light my-5 p-4">
+            <h2>Install</h2>
+            <pre class="border border-dark px-1 py-2"><!--
+-->&lt;div id="id"&gt;
+    &lt;justdatatable-component :items="items" :columns="columns" :options="options" :search="search"&gt;&lt;/justdatatable-component&gt;
+&lt;/div&gt;
+
+&lt;script src="https://unpkg.com/vue"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/http-vue-loader"&gt;&lt;/script&gt;
+&lt;script&gt;
+var app = new Vue({
+    el: '#app',
+    components: {
+        'justdatatable-component': window.httpVueLoader('justdatatable.vue')
+    },
+    data: function() { 
+        return {
+            items: [],
+            columns: [],
+            options: [],
+            search: ''
+        }
+    }
+});
+&lt;/script&gt;<!--
+            --></pre>
+        </div>
+
+
+        <div class="rounded bg-light my-5 p-4">
+            <h2>GitHub</h2>
+            <a href="https://github.com/Bitfertig/JustDatatableVue" target="_blank">JustDatatableVue on GitHub</a>
+        </div>
+        
 
 
     </div>
