@@ -100,7 +100,18 @@ demos[1] = {
             id: 4,
             name: 'Blossom',
             flower: '🌼'
+        },
+        {
+            id: 5,
+            name: 'Hibiscus',
+            flower: '🌺'
+        },
+        {
+            id: 6,
+            name: 'Cherry blossom',
+            flower: '🌸'
         }
+        
     ]
 };
 
@@ -112,7 +123,12 @@ demos[2] = {
         text: ''
     },
     search: 'b',
-    options: {},
+    options: {
+        pagination: {
+            items_per_page: 5,
+            page: 1
+        }
+    },
     columns: [
         'id',
         'name',
@@ -133,6 +149,26 @@ demos[2] = {
             id: 3,
             name: 'Maize',
             food: '🌽'
+        },
+        {
+            id: 4,
+            name: 'Cookie',
+            food: '🍪'
+        },
+        {
+            id: 5,
+            name: 'Red apple',
+            food: '🍎'
+        },
+        {
+            id: 6,
+            name: 'Green apple',
+            food: '🍏'
+        },
+        {
+            id: 7,
+            name: 'Slice of pizza',
+            food: '🍕'
         }
     ]
 };

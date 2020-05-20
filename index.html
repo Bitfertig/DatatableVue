@@ -38,10 +38,11 @@
                 <div class="col">
                     <h2>{{ description().name }}</h2>
                     <p>{{ description().text }}</p>
+                    <div><h3>Search:</h3><input v-model="demo_search" ></div>
+                    <!-- <div><h3>Pagination:</h3><input v-model="demo_pagination_items_per_page"> <input v-model="demo_pagination_page"></div> -->
                     <div><h3>Columns:</h3><pre>{{ columns() }}</pre></div>
                     <div><h3>Items:</h3><pre>{{ items() }}</pre></div>
                     <div><h3>Options:</h3><pre>{{ options() }}</pre></div>
-                    <div><h3>Search:</h3><input v-model="demo_search" ></div>
                 </div>
             </div>
         </div>
@@ -91,5 +92,16 @@ var app = new Vue({
 <script src="src/test-data.js"></script>
 <script src="src/test.js"></script>
 
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-164640273-2"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-164640273-2', { 'anonymize_ip': true });
+    </script>
+    
 </body>
 </html>

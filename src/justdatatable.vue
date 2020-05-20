@@ -18,18 +18,18 @@
                 @end="dtOptions.draggable_end(...arguments, dtItems[arguments[0].newIndex][dtOptions.key].text, dtItems)"
             > -->
                 <template v-for="(row, row_i) in get_items()">
-                    <tr :key="row_i" v-show="do_filter(row)">
+                    <tr :key="row_i" v-show="row.show">
                         <template v-for="(col, col_i) in get_columns()">
                             <td :key="col_i"
-                                v-if="row[col.name].enable_html"
-                                v-html="row[col.name].text"
-                                v-bind="row[col.name].attributes"
+                                v-if="row.cols[col.name].enable_html"
+                                v-html="row.cols[col.name].text"
+                                v-bind="row.cols[col.name].attributes"
                             >
                             </td>
                             <td :key="col_i"
                                 v-else
-                                v-bind="row[col.name].attributes"
-                            >{{ row[col.name].text }}</td>
+                                v-bind="row.cols[col.name].attributes"
+                            >{{ row.cols[col.name].text }}</td>
                         </template>
                     </tr>
                 </template>
@@ -50,12 +50,10 @@ module.exports = {
     },
     data: function(){
         return {
-            //cmpt_items: this.items,
-            //cmpt_columns: this.columns,
-            //cmpt_options: this.options,
             default_options: {
                 key: 'id',
                 order_by: ['id'],
+                pagination: {items_per_page:'*', page:1},
                 draggable: false,
                 draggable_start: function(event, key, items){},
                 draggable_end: function(event, key, items){},
@@ -79,7 +77,9 @@ module.exports = {
         ) */
 
 
-        //this.order();
+        //
+        //this.$parent.pagination_pages = Math.ceil(this.items.length / this.get_options('pagination').items_per_page);
+
     },
     computed: {
         
@@ -126,12 +126,15 @@ module.exports = {
             for (let row_i in this.items) {
                 let row = this.items[row_i];
 
-                items[row_i] = {};
+                items[row_i] = {
+                    cols: {},
+                    show: true
+                };
 
                 for (let col_i in row) {
                     let col = this.items[row_i][col_i];
 
-                    items[row_i][col_i] = {};
+                    items[row_i].cols[col_i] = {};
 
                     let column = {
                         attributes: {},
@@ -156,11 +159,15 @@ module.exports = {
                         column.value = col;
                     }
 
-                    items[row_i][col_i] = column;
+                    items[row_i].cols[col_i] = column;
                 }
+
+                items[row_i].show = this.do_filter(items[row_i]);
             }
 
             items = this.do_order(items);
+
+            items = this.do_pagination(items);
 
             return items;
         },
@@ -172,8 +179,8 @@ module.exports = {
                 let order_keys = this.get_option('order_by');//['order','id'];
                 for (let i in order_keys) {
                     let order_key = order_keys[i];
-                    let value_a = a[order_key].value;
-                    let value_b = b[order_key].value;
+                    let value_a = a.cols[order_key].value;
+                    let value_b = b.cols[order_key].value;
                     let compared = isNumber(value_a) ? value_a - value_b : value_a.localeCompare(value_b);
                     if (compared) return compared;
                 }
@@ -191,7 +198,7 @@ module.exports = {
             let q = this.search.split(' ');
             let fulltext = '';
             for (let col of this.get_columns()) {
-                let val = row[col.name].value.toString();
+                let val = row.cols[col.name].value.toString();
                 fulltext += ' ' + val;
             }
             //console.log(fulltext);
@@ -201,6 +208,25 @@ module.exports = {
             }
             if ( found == q.length ) return true;
             return false;
+        },
+        do_pagination: function(items) {
+            let items_per_page = this.get_option('pagination').items_per_page;
+            let page = this.get_option('pagination').page;
+            if ( items_per_page == '*' ) return items; // => No pagination
+            let start = (page - 1) * items_per_page;
+            let end = start + items_per_page;
+            let i = 0;
+            for (let item_i in items) {
+                let item = items[item_i];
+                if ( item.show ) {
+                    if ( i >= start && i < end ) {
+                        item.show = true;
+                    }
+                    else item.show = false;
+                    i++;
+                }
+            }
+            return items;
         },
 
         // Helper
