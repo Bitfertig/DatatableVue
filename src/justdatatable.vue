@@ -1,7 +1,7 @@
 <template>
     <div v-cloak>
 
-        <table v-bind="get_option('dom_table_attributes')">
+        <table v-bind="get_option('dom_table_attributes')" ref="table">
             <thead v-bind="get_option('dom_table_thead_attributes')">
                 <tr>
                     <template v-for="(col, col_i) in get_columns()">
@@ -17,6 +17,7 @@
                 @start="dtOptions.draggable_start(...arguments, dtItems[arguments[0].oldIndex][dtOptions.key].text, dtItems)"
                 @end="dtOptions.draggable_end(...arguments, dtItems[arguments[0].newIndex][dtOptions.key].text, dtItems)"
             > -->
+            <tbody v-bind="{...get_option('dom_table_tbody_attributes')}">
                 <template v-for="(row, row_i) in get_items()">
                     <tr :key="row_i" v-show="row.show">
                         <template v-for="(col, col_i) in get_columns()">
@@ -33,7 +34,7 @@
                         </template>
                     </tr>
                 </template>
-            <!-- </draggable> -->
+            </tbody>
         </table>
 
     </div>
@@ -57,7 +58,7 @@ module.exports = {
                 draggable: false,
                 draggable_start: function(event, key, items){},
                 draggable_end: function(event, key, items){},
-                draggable_attributes: {}, // {handle:'.handle'
+                draggable_attributes: {}, // {handle:'.handle'}
                 dom_table_attributes: {},
                 dom_table_thead_attributes: {},
                 dom_table_tbody_attributes: {}
@@ -65,20 +66,34 @@ module.exports = {
         }
     },
     mounted () {
-        // TODO: draggable entfernen und nur sortable verwenden?
-        /* eslint-disable no-new */
-        /* new Sortable(
-            this.$refs.sortableTable.$el.getElementsByTagName('tbody')[0],
+        
+        //var sortableTbody = this.$refs.table.$el.getElementsByTagName('tbody')[0];
+        var sortableTbody = this.$refs.table.getElementsByTagName('tbody')[0];
+        new Sortable(
+            sortableTbody,
             {
-            draggable: '.sortableRow',
-            handle: '.sortHandle',
-            onEnd: this.dragReorder
+                draggable: 'tr',
+                handle: '.handle',
+                onEnd: this.dragReorder,
+                onStart: function (/**Event*/evt) {
+                    evt.oldIndex;  // element index within parent
+                },
+                onEnd: function (/**Event*/evt) {
+                    var itemEl = evt.item;  // dragged HTMLElement
+                    evt.to;    // target list
+                    evt.from;  // previous list
+                    evt.oldIndex;  // element's old index within old parent
+                    evt.newIndex;  // element's new index within new parent
+                    evt.oldDraggableIndex; // element's old index within old parent, only counting draggable elements
+                    evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
+                    evt.clone // the clone element
+                    evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
+                }
             }
-        ) */
+        );
+        //@start="dtOptions.draggable_start(...arguments, dtItems[arguments[0].oldIndex][dtOptions.key].text, dtItems)"
+        //@end="dtOptions.draggable_end(...arguments, dtItems[arguments[0].newIndex][dtOptions.key].text, dtItems)"
 
-
-        //
-        //this.$parent.pagination_pages = Math.ceil(this.items.length / this.get_options('pagination').items_per_page);
 
     },
     computed: {
@@ -167,7 +182,14 @@ module.exports = {
 
             items = this.do_order(items);
 
+            let show_count = items.filter(item => item.show).length;
+
             items = this.do_pagination(items);
+            
+            let count = items.filter(item => item.show).length;
+            
+            let items_per_page = typeof this.get_option('pagination').items_per_page !== 'undefined' && this.get_option('pagination').items_per_page != '*' ? this.get_option('pagination').items_per_page : show_count;
+            this.$parent.pagination_pages = Math.ceil(show_count / items_per_page); // Expose pagination pagecount (Is there a better way?)
 
             return items;
         },

@@ -38,7 +38,14 @@
                 <div class="col">
                     <h2>{{ description().name }}</h2>
                     <p>{{ description().text }}</p>
-                    <div><h3>Search:</h3><input v-model="demo_search" ></div>
+                    <div><h3>Search:</h3><input v-model="demo_search"></div>
+                    <div><h3>Pagination:</h3>
+                        <div v-if="typeof options().pagination !== 'undefined'">
+                            <select v-model="options().pagination.page">
+                                <option v-for="(page, page_index) in new Array(pagination_pages)" :value="page_index + 1">Seite {{ page_index + 1 }}</option>
+                            </select>
+                        </div>
+                    </div>
                     <!-- <div><h3>Pagination:</h3><input v-model="demo_pagination_items_per_page"> <input v-model="demo_pagination_page"></div> -->
                     <div><h3>Columns:</h3><pre>{{ columns() }}</pre></div>
                     <div><h3>Items:</h3><pre>{{ items() }}</pre></div>
@@ -86,6 +93,11 @@ var app = new Vue({
 
     </div>
 </div>
+
+
+<!-- jsDelivr :: Sortable :: Latest (https://www.jsdelivr.com/package/npm/sortablejs) -->
+<!--script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script-->
+<script src="src/Sortable.min.js"></script>
 
 <script src="https://unpkg.com/vue"></script>
 <script src="https://unpkg.com/http-vue-loader"></script><!-- Use module.exports instead of export default. httpVueLoader does not resolve modules required using the export syntax yet. -->

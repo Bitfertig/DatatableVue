@@ -8,6 +8,7 @@ var app = new window.Vue({
             demos_index: 0,
             demos: window.demos,
 
+            pagination_pages: 1,
             demo_search: ''
         }
     },

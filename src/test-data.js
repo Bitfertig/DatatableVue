@@ -74,7 +74,10 @@ demos[1] = {
         name: 'Example with flowers',
         text: ''
     },
-    //options: {},
+    options: {
+        draggable: true,
+        draggable_attributes: {handle:'.handle'}
+    },
     columns: [
         { name: 'id', text: 'ID' },
         { name: 'name', text: 'Names' },
@@ -125,7 +128,7 @@ demos[2] = {
     search: 'b',
     options: {
         pagination: {
-            items_per_page: 5,
+            items_per_page: 3,
             page: 1
         }
     },
