@@ -67,9 +67,8 @@ module.exports = {
     },
     mounted () {
         
-        //var sortableTbody = this.$refs.table.$el.getElementsByTagName('tbody')[0];
         var sortableTbody = this.$refs.table.getElementsByTagName('tbody')[0];
-        new Sortable(
+        new window.Sortable(
             sortableTbody,
             {
                 draggable: 'tr',
@@ -77,6 +76,13 @@ module.exports = {
                 onEnd: this.dragReorder,
                 onStart: function (/**Event*/evt) {
                     evt.oldIndex;  // element index within parent
+
+                    // Enhance with item row data
+                    evt.data = {};
+                    evt.data.itemsData = that.get_items();
+                    evt.data.item = evt.data.itemsData[evt.oldIndex];
+
+                    that.$emit('sortablestart', ...arguments);
                 },
                 onEnd: function (/**Event*/evt) {
                     var itemEl = evt.item;  // dragged HTMLElement
@@ -88,11 +94,16 @@ module.exports = {
                     evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
                     evt.clone // the clone element
                     evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
+
+                    // Enhance with item row data
+                    evt.data = {};
+                    evt.data.itemsData = that.get_items();
+                    evt.data.item = evt.data.itemsData[evt.oldIndex];
+
+                    that.$emit('sortableend', ...arguments);
                 }
             }
         );
-        //@start="dtOptions.draggable_start(...arguments, dtItems[arguments[0].oldIndex][dtOptions.key].text, dtItems)"
-        //@end="dtOptions.draggable_end(...arguments, dtItems[arguments[0].newIndex][dtOptions.key].text, dtItems)"
 
 
     },
