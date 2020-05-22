@@ -189,7 +189,10 @@ module.exports = {
             let count = items.filter(item => item.show).length;
             
             let items_per_page = typeof this.get_option('pagination').items_per_page !== 'undefined' && this.get_option('pagination').items_per_page != '*' ? this.get_option('pagination').items_per_page : show_count;
-            this.$parent.pagination_pages = Math.ceil(show_count / items_per_page); // Expose pagination pagecount (Is there a better way?)
+
+            let page_count = Math.ceil(show_count / items_per_page);
+
+            this.$emit('pagecountchange', page_count); // Expose/Emit
 
             return items;
         },
