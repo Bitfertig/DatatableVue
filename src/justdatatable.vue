@@ -18,7 +18,7 @@
                 @end="dtOptions.draggable_end(...arguments, dtItems[arguments[0].newIndex][dtOptions.key].text, dtItems)"
             > -->
             <tbody v-bind="{...get_option('dom_table_tbody_attributes')}">
-                <template v-for="(row, row_i) in get_items()">
+                <template v-for="(row, row_i) in current_items">
                     <tr :key="row_i" v-show="row.show">
                         <template v-for="(col, col_i) in get_columns()">
                             <td :key="col_i"
@@ -43,8 +43,8 @@
 
 
 <script>
-//export default {
-module.exports = {
+export default {
+//module.exports = {
     props: ['items', 'columns', 'options', 'search'],
     components: {
         //draggable,
@@ -56,8 +56,6 @@ module.exports = {
                 order_by: ['id'],
                 pagination: {items_per_page:'*', page:1},
                 draggable: false,
-                draggable_start: function(event, key, items){},
-                draggable_end: function(event, key, items){},
                 draggable_attributes: {}, // {handle:'.handle'}
                 dom_table_attributes: {},
                 dom_table_thead_attributes: {},
@@ -66,7 +64,10 @@ module.exports = {
         }
     },
     mounted () {
-        
+
+        var that = this;
+
+
         var sortableTbody = this.$refs.table.getElementsByTagName('tbody')[0];
         new window.Sortable(
             sortableTbody,
@@ -79,10 +80,10 @@ module.exports = {
 
                     // Enhance with item row data
                     evt.data = {};
-                    evt.data.items = that.get_items();
+                    evt.data.items = that.current_items;
                     evt.data.item = evt.data.items[evt.oldIndex];
 
-                    that.$emit('sortablestart', ...arguments);
+                    that.$emit('draggablestart', ...arguments);
                 },
                 onEnd: function (/**Event*/evt) {
                     var itemEl = evt.item;  // dragged HTMLElement
@@ -95,12 +96,20 @@ module.exports = {
                     evt.clone // the clone element
                     evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
 
+                    // Move to new position
+                    function arraymove(arr, fromIndex, toIndex) {
+                        var element = arr[fromIndex];
+                        arr.splice(fromIndex, 1);
+                        arr.splice(toIndex, 0, element);
+                    }
+                    arraymove(that.current_items, evt.oldIndex, evt.newIndex);
+
                     // Enhance with item row data
                     evt.data = {};
-                    evt.data.items = that.get_items();
+                    evt.data.items = that.current_items;
                     evt.data.item = evt.data.items[evt.oldIndex];
 
-                    that.$emit('sortableend', ...arguments);
+                    that.$emit('draggableend', ...arguments);
                 }
             }
         );
@@ -108,7 +117,14 @@ module.exports = {
 
     },
     computed: {
-        
+        current_items: {
+            get: function() {
+                return this.get_items();
+            },
+            set: function(newValue) {
+                this.items = newValue;
+            }
+        }
     },
     methods: {
         get_option: function(option) {
@@ -196,9 +212,9 @@ module.exports = {
             let show_count = items.filter(item => item.show).length;
 
             items = this.do_pagination(items);
-            
+
             let count = items.filter(item => item.show).length;
-            
+
             let items_per_page = typeof this.get_option('pagination').items_per_page !== 'undefined' && this.get_option('pagination').items_per_page != '*' ? this.get_option('pagination').items_per_page : show_count;
 
             let page_count = Math.ceil(show_count / items_per_page);
