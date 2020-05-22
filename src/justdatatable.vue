@@ -79,8 +79,8 @@ module.exports = {
 
                     // Enhance with item row data
                     evt.data = {};
-                    evt.data.itemsData = that.get_items();
-                    evt.data.item = evt.data.itemsData[evt.oldIndex];
+                    evt.data.items = that.get_items();
+                    evt.data.item = evt.data.items[evt.oldIndex];
 
                     that.$emit('sortablestart', ...arguments);
                 },
@@ -97,8 +97,8 @@ module.exports = {
 
                     // Enhance with item row data
                     evt.data = {};
-                    evt.data.itemsData = that.get_items();
-                    evt.data.item = evt.data.itemsData[evt.oldIndex];
+                    evt.data.items = that.get_items();
+                    evt.data.item = evt.data.items[evt.oldIndex];
 
                     that.$emit('sortableend', ...arguments);
                 }
