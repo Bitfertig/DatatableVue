@@ -33,7 +33,7 @@
         <div class="rounded bg-light my-5 p-4">
             <div class="row">
                 <div class="col">
-                    <justdatatable-component :items="items()" :columns="columns()" :options="options()" :search="demo_search"></justdatatable-component>
+                    <justdatatable-vue :items="items()" :columns="columns()" :options="options()" :search="demo_search" @pagecountchange="pagination_pagecount = $event"></justdatatable-vue>
                 </div>
                 <div class="col">
                     <h2>{{ description().name }}</h2>
@@ -42,7 +42,7 @@
                     <div><h3>Pagination:</h3>
                         <div v-if="typeof options().pagination !== 'undefined'">
                             <select v-model="options().pagination.page">
-                                <option v-for="(page, page_index) in new Array(pagination_pages)" :value="page_index + 1">Seite {{ page_index + 1 }}</option>
+                                <option v-for="(page, page_index) in new Array(pagination_pagecount)" :value="page_index + 1">Seite {{ page_index + 1 }}</option>
                             </select>
                         </div>
                     </div>
@@ -59,7 +59,7 @@
             <h2>Install</h2>
             <pre class="border border-dark px-1 py-2"><!--
 -->&lt;div id="id"&gt;
-    &lt;justdatatable-component :items="items" :columns="columns" :options="options" :search="search"&gt;&lt;/justdatatable-component&gt;
+    &lt;justdatatable-vue :items="items" :columns="columns" :options="options" :search="search" @pagecountchange="pagination_pagecount = $event"&gt;&lt;/justdatatable-vue&gt;
 &lt;/div&gt;
 
 &lt;script src="https://unpkg.com/vue"&gt;&lt;/script&gt;
@@ -68,14 +68,15 @@
 var app = new Vue({
     el: '#app',
     components: {
-        'justdatatable-component': window.httpVueLoader('justdatatable.vue')
+        'justdatatable-vue': window.httpVueLoader('justdatatable.vue')
     },
     data: function() { 
         return {
             items: [],
             columns: [],
             options: [],
-            search: ''
+            search: '',
+            pagination_pagecount: 1
         }
     }
 });

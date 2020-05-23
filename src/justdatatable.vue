@@ -10,13 +10,6 @@
                     </template>
                 </tr>
             </thead>
-            <!-- <draggable tag="tbody"
-                v-model="dtItems"
-                :disabled="!dtOptions.draggable"
-                v-bind="{...dtOptions.dom_table_tbody_attributes, ...dtOptions.draggable_attributes}"
-                @start="dtOptions.draggable_start(...arguments, dtItems[arguments[0].oldIndex][dtOptions.key].text, dtItems)"
-                @end="dtOptions.draggable_end(...arguments, dtItems[arguments[0].newIndex][dtOptions.key].text, dtItems)"
-            > -->
             <tbody v-bind="{...get_option('dom_table_tbody_attributes')}">
                 <template v-for="(row, row_i) in current_items">
                     <tr :key="row_i" v-show="row.show">
@@ -43,8 +36,8 @@
 
 
 <script>
-export default {
-//module.exports = {
+//export default { // Variant for npm
+module.exports = { // Variant for httpVueLoader
     props: ['items', 'columns', 'options', 'search'],
     components: {
         //draggable,

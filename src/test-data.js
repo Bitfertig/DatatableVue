@@ -125,8 +125,12 @@ demos[2] = {
         name: 'Example with food',
         text: ''
     },
-    search: 'b',
+    search: '',
     options: {
+        key: 'id',
+        dom_table_attributes: {class:'table table-striped w-100'},
+        dom_table_thead_attributes: {class:'table-dark'},
+        dom_table_tbody_attributes: {},
         pagination: {
             items_per_page: 3,
             page: 1

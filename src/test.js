@@ -1,14 +1,14 @@
 var app = new window.Vue({
     el: '#app',
     components: {
-        'justdatatable-component': window.httpVueLoader('src/justdatatable.vue')
+        'justdatatable-vue': window.httpVueLoader('src/justdatatable.vue')
     },
     data: function() { 
         return {
             demos_index: 0,
             demos: window.demos,
 
-            pagination_pages: 1,
+            pagination_pagecount: 1,
             demo_search: ''
         }
     },
